@@ -2,6 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:palette_generator/palette_generator.dart';
 import 'package:popular_people/application/popular_people/providers/person_detail_provider.dart';
+import 'package:popular_people/application/popular_people/views/image_screen.dart';
 import 'package:popular_people/core/core.dart';
 import 'package:popular_people/domain/domain.dart';
 import 'package:provider/provider.dart';
@@ -126,9 +127,15 @@ class _ImageGridWidget extends StatelessWidget {
         gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
             crossAxisCount: 3, childAspectRatio: 2 / 3),
         delegate: SliverChildBuilderDelegate(
-          (_, int index) {
-            return Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 5),
+          (_, int index) => Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 5),
+            child: GestureDetector(
+              onTap: () {
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (_) => ImageScreen(image: imageList[index])));
+              },
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(6),
                 child: CachedNetworkImage(
@@ -137,8 +144,8 @@ class _ImageGridWidget extends StatelessWidget {
                   fit: BoxFit.fill,
                 ),
               ),
-            );
-          },
+            ),
+          ),
           childCount: imageList.length,
         ),
       );

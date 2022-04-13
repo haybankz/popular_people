@@ -1,7 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:palette_generator/palette_generator.dart';
 import 'package:popular_people/application/popular_people/providers/person_detail_provider.dart';
-import 'package:popular_people/core/constants/strings.dart';
 import 'package:popular_people/core/core.dart';
 import 'package:popular_people/domain/domain.dart';
 import 'package:provider/provider.dart';
@@ -24,6 +24,13 @@ class _PersonDetailScreenState extends State<PersonDetailScreen> {
     });
   }
 
+  Future<PaletteGenerator> _updatePaletteGenerator() async {
+    final paletteGenerator = await PaletteGenerator.fromImageProvider(
+        CachedNetworkImageProvider(
+            "${Strings.imageStorageUrl}${widget.person.profilePath}"));
+    return paletteGenerator;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -33,12 +40,36 @@ class _PersonDetailScreenState extends State<PersonDetailScreen> {
             expandedHeight: 250.0,
             pinned: true,
             flexibleSpace: FlexibleSpaceBar(
-              title: Text(widget.person.name ?? "", textScaleFactor: 1),
-              background: CachedNetworkImage(
-                imageUrl:
-                    '${Strings.imageStorageUrl}${widget.person.profilePath}',
-                fit: BoxFit.cover,
+              title: Text(
+                widget.person.name ?? "",
               ),
+              background: FutureBuilder<PaletteGenerator>(
+                  future: _updatePaletteGenerator(),
+                  builder: (context, snapshot) {
+                    return Stack(
+                      children: [
+                        CachedNetworkImage(
+                          imageUrl:
+                              '${Strings.imageStorageUrl}${widget.person.profilePath}',
+                          width: double.infinity,
+                          fit: BoxFit.cover,
+                        ),
+                        Container(
+                          width: double.infinity,
+                          decoration: BoxDecoration(
+                              gradient: LinearGradient(
+                                  begin: Alignment.topCenter,
+                                  end: Alignment.bottomCenter,
+                                  colors: [
+                                Colors.transparent,
+                                (snapshot.data?.darkVibrantColor?.color ??
+                                        Colors.grey)
+                                    .withOpacity(0.9)
+                              ])),
+                        )
+                      ],
+                    );
+                  }),
             ),
           ),
           _ImageGridWidget(personId: widget.person.id!),

@@ -44,12 +44,20 @@ class _HomePageState extends State<HomePage> {
         } else if (_homeProvider.peopleResult.status == Status.error) {
           return Center(
             child: Column(
-              children: const [
-                Icon(
+              children: [
+                const Icon(
                   Icons.error_outline,
                   color: Colors.red,
                 ),
-                Text("Loading ......")
+                TextButton(
+                  child: const Text(
+                    "Error.\n Click to retry",
+                    textAlign: TextAlign.center,
+                  ),
+                  onPressed: () {
+                    _homeProvider.fetchPeople();
+                  },
+                )
               ],
             ),
           );
@@ -63,7 +71,7 @@ class _HomePageState extends State<HomePage> {
                         right: Radius.circular(4), left: Radius.circular(4)),
                     child: CachedNetworkImage(
                       imageUrl:
-                          "https://image.tmdb.org/t/p/w500${peopleList[index].profilePath!}",
+                          "${Strings.imageStorageUrl}${peopleList[index].profilePath!}",
                       width: 60,
                       height: 60,
                       fit: BoxFit.fill,

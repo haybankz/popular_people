@@ -7,11 +7,13 @@ class PersonImageModel extends PersonImageEntity {
   }) : super(id: id, images: images);
 
   factory PersonImageModel.fromJson(dynamic json) {
-    return PersonImageModel(
-        id: json['id'],
-        images: json['profiles'] != null
-            ? json['profiles'].map((e) => ImageModel.fromJson(e))
-            : "");
+    final List<ImageModel> imageList = [];
+    if (json['profiles'] != null) {
+      for (final image in json['profiles']) {
+        imageList.add(ImageModel.fromJson(image));
+      }
+    }
+    return PersonImageModel(id: json['id'], images: imageList);
   }
 
   Map<String, dynamic> toJson() {

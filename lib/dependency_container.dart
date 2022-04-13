@@ -3,6 +3,7 @@ import 'package:flutter/foundation.dart';
 import 'package:get_it/get_it.dart';
 import 'package:internet_connection_checker/internet_connection_checker.dart';
 import 'package:popular_people/application/popular_people/providers/home_provider.dart';
+import 'package:popular_people/application/popular_people/providers/person_detail_provider.dart';
 import 'package:popular_people/data/data.dart';
 import 'package:popular_people/domain/domain.dart';
 import 'package:popular_people/domain/use_cases/fetch_person_image_use_case.dart';
@@ -48,6 +49,7 @@ _registerLocalDataSources() {}
 //  * Providers
 _registerProviders() {
   di.registerFactory(() => HomeProvider(di<FetchPopularPeopleUseCase>()));
+  di.registerFactory(() => PersonDetailProvider(di<FetchPersonImageUseCase>()));
 }
 
 // * External

@@ -1,5 +1,8 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:popular_people/application/popular_people/providers/person_detail_provider.dart';
+import 'package:popular_people/core/constants/strings.dart';
+import 'package:popular_people/core/core.dart';
 import 'package:popular_people/domain/domain.dart';
 import 'package:provider/provider.dart';
 
@@ -14,7 +17,6 @@ class PersonDetailScreen extends StatefulWidget {
 class _PersonDetailScreenState extends State<PersonDetailScreen> {
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     WidgetsBinding.instance!.addPostFrameCallback((timeStamp) {
       Provider.of<PersonDetailProvider>(context, listen: false)
@@ -25,21 +27,90 @@ class _PersonDetailScreenState extends State<PersonDetailScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.person.name ?? ""),
+      body: CustomScrollView(
+        slivers: <Widget>[
+          SliverAppBar(
+            expandedHeight: 250.0,
+            pinned: true,
+            flexibleSpace: FlexibleSpaceBar(
+              title: Text(widget.person.name ?? "", textScaleFactor: 1),
+              background: CachedNetworkImage(
+                imageUrl:
+                    '${Strings.imageStorageUrl}${widget.person.profilePath}',
+                fit: BoxFit.cover,
+              ),
+            ),
+          ),
+          _ImageGridWidget(personId: widget.person.id!),
+        ],
       ),
-      floatingActionButton: FloatingActionButton(
-        child: const Icon(Icons.add),
-        onPressed: () {
-          Provider.of<PersonDetailProvider>(context, listen: false)
-              .getPersonImage(widget.person.id!);
-        },
-      ),
-      body: Center(
-        child: Column(
-          children: [Text(widget.person.name ?? "")],
-        ),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
     );
+  }
+}
+
+class _ImageGridWidget extends StatelessWidget {
+  const _ImageGridWidget({Key? key, required this.personId}) : super(key: key);
+  final int personId;
+
+  @override
+  Widget build(BuildContext context) {
+    return Consumer<PersonDetailProvider>(builder: (ctx, provider, child) {
+      if (provider.personImageResult.status == Status.loading) {
+        return SliverFillRemaining(
+          child: Column(
+            children: const [
+              SizedBox(
+                width: 50,
+                height: 50,
+                child: CircularProgressIndicator.adaptive(),
+              ),
+              Text("Loading ......")
+            ],
+          ),
+        );
+      } else if (provider.personImageResult.status == Status.error) {
+        return SliverFillRemaining(
+          child: Column(
+            children: [
+              const Icon(
+                Icons.error_outline,
+                color: Colors.red,
+              ),
+              Text(provider.personImageResult.message),
+              TextButton(
+                child: const Text(
+                  "Click to retry",
+                  textAlign: TextAlign.center,
+                ),
+                onPressed: () {
+                  provider.getPersonImage(personId);
+                },
+              )
+            ],
+          ),
+        );
+      }
+      final imageList = provider.personImageResult.data?.images ?? [];
+      return SliverGrid(
+        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: 3, childAspectRatio: 2 / 3),
+        delegate: SliverChildBuilderDelegate(
+          (_, int index) {
+            return Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 5),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(6),
+                child: CachedNetworkImage(
+                  imageUrl:
+                      "${Strings.imageStorageUrl}${imageList[index].filePath}",
+                  fit: BoxFit.fill,
+                ),
+              ),
+            );
+          },
+          childCount: imageList.length,
+        ),
+      );
+    });
   }
 }

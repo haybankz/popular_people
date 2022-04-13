@@ -2,32 +2,41 @@ import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:get_it/get_it.dart';
 import 'package:internet_connection_checker/internet_connection_checker.dart';
+import 'package:popular_people/data/data.dart';
+import 'package:popular_people/domain/domain.dart';
 
 import 'core/core.dart';
 
 final di = GetIt.instance;
 
 void initDI() {
-  _registerUseCases();
+  _registerOthers();
   _registerRepositories();
   _registerRemoteDataSources();
   _registerLocalDataSources();
-  _registerOthers();
   _registerProviders();
+  _registerUseCases();
 }
 
 //* use cases
 _registerUseCases() {
-  //TODO register use cases
+  di.registerFactory(() =>
+      FetchPopularPeopleUseCase(repository: di<PopularPeopleRepository>()));
 }
+
 // * Repositories
 _registerRepositories() {
-  //TODO register repositories
+  di.registerLazySingleton<PopularPeopleRepository>(() =>
+      PopularPeopleRepositoryImpl(
+          di<NetworkInfo>(), di<PopularPeopleRemoteDataSource>()));
 }
+
 // * Network data sources
 _registerRemoteDataSources() {
-  //TODO register remote data sources
+  di.registerFactory<PopularPeopleRemoteDataSource>(
+      () => RestPopularPeopleRemoteDataSource(dio: di<Dio>()));
 }
+
 // * Local data sources
 _registerLocalDataSources() {
   //TODO register remote local sources
@@ -41,7 +50,11 @@ _registerProviders() {
 // * External
 _registerOthers() {
   //TODO register external packages
-  Dio dio = Dio();
+  Dio dio = Dio(BaseOptions(
+    baseUrl: Strings.baseUrl,
+    connectTimeout: 1000 * 60, //60sec
+    receiveTimeout: 1000 * 60, //60sec
+  ));
   if (kDebugMode) {
     dio.interceptors.add(LogInterceptor(
         responseBody: true,

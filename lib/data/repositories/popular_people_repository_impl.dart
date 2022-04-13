@@ -10,7 +10,7 @@ class PopularPeopleRepositoryImpl implements PopularPeopleRepository {
   PopularPeopleRepositoryImpl(this.networkInfo, this.remoteDataSource);
 
   @override
-  Future<Result<PopularPeopleEntity>> fetchPopularPeople(
+  Future<Result<PopularPeopleModel>> fetchPopularPeople(
       FetchPopularPeopleParam param) async {
     try {
       if (await networkInfo.isConnected) {
@@ -18,12 +18,28 @@ class PopularPeopleRepositoryImpl implements PopularPeopleRepository {
         return Result<PopularPeopleModel>.completed(response);
       } else {
         //TODO return popular people list from local datasource
-        return Result<PopularPeopleEntity>.error(Strings.noInternet);
+        return Result<PopularPeopleModel>.error(Strings.noInternet);
       }
     } on ServerException catch (e) {
-      return Result<PopularPeopleEntity>.error(e.message);
+      return Result<PopularPeopleModel>.error(e.message);
     } catch (e) {
-      return Result<PopularPeopleEntity>.error(e.toString());
+      return Result<PopularPeopleModel>.error(e.toString());
+    }
+  }
+
+  @override
+  Future<Result<PersonImageModel>> fetchPersonImage(int personId) async {
+    try {
+      if (await networkInfo.isConnected) {
+        final response = await remoteDataSource.fetchPersonImage(personId);
+        return Result<PersonImageModel>.completed(response);
+      } else {
+        return Result<PersonImageModel>.error(Strings.noInternet);
+      }
+    } on ServerException catch (e) {
+      return Result<PersonImageModel>.error(e.message);
+    } catch (e) {
+      return Result<PersonImageModel>.error(e.toString());
     }
   }
 }

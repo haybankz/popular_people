@@ -5,4 +5,6 @@ import '../use_cases/use_cases.dart';
 abstract class PopularPeopleRepository {
   Future<Result<PopularPeopleEntity>> fetchPopularPeople(
       FetchPopularPeopleParam param);
+
+  Future<Result<PersonImageEntity>> fetchPersonImage(int personId);
 }

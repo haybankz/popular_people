@@ -14,6 +14,7 @@ class PersonDetailScreen extends StatefulWidget {
 class _PersonDetailScreenState extends State<PersonDetailScreen> {
   @override
   void initState() {
+    // TODO: implement initState
     super.initState();
     WidgetsBinding.instance!.addPostFrameCallback((timeStamp) {
       Provider.of<PersonDetailProvider>(context, listen: false)

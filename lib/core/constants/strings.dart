@@ -1,6 +1,8 @@
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+
 class Strings {
   static String baseUrl = "https://api.themoviedb.org/3";
-  static String apiKey = "";
+  static String apiKey = dotenv.env['API_KEY'] ?? "";
   static const String noInternet = "No Internet connection";
   static const connectionTimeOut = "Connection timeout";
   static const connectionCancelled = "Connection was cancelled";

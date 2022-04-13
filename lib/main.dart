@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:get_it/get_it.dart';
 import 'package:popular_people/application/popular_people/providers/home_provider.dart';
 import 'package:popular_people/application/popular_people/providers/person_detail_provider.dart';
@@ -7,7 +8,8 @@ import 'package:provider/provider.dart';
 
 import 'application/application.dart';
 
-void main() {
+void main() async {
+  await dotenv.load(fileName: ".env");
   initDI();
   runApp(const MyApp());
 }

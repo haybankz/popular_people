@@ -43,8 +43,7 @@ _registerRemoteDataSources() {
 }
 
 // * Local data sources
-_registerLocalDataSources() {
-}
+_registerLocalDataSources() {}
 
 //  * Providers
 _registerProviders() {

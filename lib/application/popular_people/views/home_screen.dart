@@ -64,6 +64,8 @@ class _HomePageState extends State<HomePage> {
                     child: CachedNetworkImage(
                       imageUrl:
                           "https://image.tmdb.org/t/p/w500${peopleList[index].profilePath!}",
+                      width: 60,
+                      height: 60,
                       fit: BoxFit.fill,
                     ),
                   ),

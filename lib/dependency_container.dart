@@ -1,3 +1,5 @@
+import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
 import 'package:get_it/get_it.dart';
 import 'package:internet_connection_checker/internet_connection_checker.dart';
 
@@ -39,7 +41,17 @@ _registerProviders() {
 // * External
 _registerOthers() {
   //TODO register external packages
-  di.registerFactory<ApiBaseHelper>(() => ApiBaseHelper());
+  Dio dio = Dio();
+  if (kDebugMode) {
+    dio.interceptors.add(LogInterceptor(
+        responseBody: true,
+        error: true,
+        requestHeader: true,
+        responseHeader: false,
+        request: true,
+        requestBody: true));
+  }
+  di.registerFactory<Dio>(() => dio);
 
   di.registerSingleton<InternetConnectionChecker>(InternetConnectionChecker());
 

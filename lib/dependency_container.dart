@@ -4,6 +4,7 @@ import 'package:get_it/get_it.dart';
 import 'package:internet_connection_checker/internet_connection_checker.dart';
 import 'package:popular_people/data/data.dart';
 import 'package:popular_people/domain/domain.dart';
+import 'package:popular_people/domain/use_cases/fetch_person_image_use_case.dart';
 
 import 'core/core.dart';
 
@@ -22,6 +23,9 @@ void initDI() {
 _registerUseCases() {
   di.registerFactory(() =>
       FetchPopularPeopleUseCase(repository: di<PopularPeopleRepository>()));
+
+  di.registerFactory(
+      () => FetchPersonImageUseCase(repository: di<PopularPeopleRepository>()));
 }
 
 // * Repositories

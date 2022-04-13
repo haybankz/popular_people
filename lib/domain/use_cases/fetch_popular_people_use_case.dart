@@ -11,8 +11,7 @@ class FetchPopularPeopleUseCase
 
   @override
   Future<Result<PopularPeopleEntity>> call(FetchPopularPeopleParam params) {
-    // TODO: implement call
-    throw UnimplementedError();
+    return repository.fetchPopularPeople(params);
   }
 }
 

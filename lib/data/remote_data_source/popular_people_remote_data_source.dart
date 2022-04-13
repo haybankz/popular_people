@@ -25,7 +25,7 @@ class RestPopularPeopleRemoteDataSource
     try {
       final queryParam = param.toJson();
       queryParam['api_key'] = Strings.apiKey;
-      var response = await dio.post(fetchPopularPeopleEndpoint,
+      var response = await dio.get(fetchPopularPeopleEndpoint,
           queryParameters: queryParam);
       if (response.statusCode == HttpStatus.ok) {
         return PopularPeopleModel.fromJson(response.data);
@@ -43,7 +43,7 @@ class RestPopularPeopleRemoteDataSource
   Future<PersonImageModel> fetchPersonImage(int personId) async {
     try {
       final queryParam = {"api_key": Strings.apiKey};
-      var response = await dio.post("$getPersonImages/$personId/images",
+      var response = await dio.get("$getPersonImages/$personId/images",
           queryParameters: queryParam);
       if (response.statusCode == HttpStatus.ok) {
         return PersonImageModel.fromJson(response.data);

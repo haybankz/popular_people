@@ -5,18 +5,17 @@ import 'package:popular_people/domain/use_cases/fetch_person_image_use_case.dart
 
 class PersonDetailProvider extends ChangeNotifier {
   final FetchPersonImageUseCase _fetchPersonImageUseCase;
-  final PersonEntity _person;
 
-  PersonDetailProvider(this._fetchPersonImageUseCase, this._person);
+  PersonDetailProvider(this._fetchPersonImageUseCase);
 
   Result<PersonImageEntity> personImageResult =
       Result<PersonImageEntity>.completed(null);
 
-  Future<void> getPersonImage() async {
+  Future<void> getPersonImage(int personId) async {
     personImageResult = Result<PersonImageEntity>.loading("");
     notifyListeners();
 
-    personImageResult = await _fetchPersonImageUseCase.call(_person.id!);
+    personImageResult = await _fetchPersonImageUseCase.call(personId);
     notifyListeners();
   }
 }

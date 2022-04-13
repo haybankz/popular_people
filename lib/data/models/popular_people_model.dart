@@ -15,11 +15,15 @@ class PopularPeopleModel extends PopularPeopleEntity {
             totalResults: totalResults);
 
   factory PopularPeopleModel.fromJson(dynamic json) {
+    final List<PersonModel> resultList = [];
+    if (json['results'] != null) {
+      for (final res in json["results"]) {
+        resultList.add(PersonModel.fromJson(res));
+      }
+    }
     return PopularPeopleModel(
         page: json['page'],
-        results: json['results'] != null
-            ? json['results'].map((e) => PersonModel.fromJson(e))
-            : [],
+        results: resultList,
         totalPages: json['total_pages'],
         totalResults: json['total_results']);
   }

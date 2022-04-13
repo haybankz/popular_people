@@ -44,7 +44,6 @@ _registerRemoteDataSources() {
 
 // * Local data sources
 _registerLocalDataSources() {
-  //TODO register remote local sources
 }
 
 //  * Providers
@@ -54,7 +53,6 @@ _registerProviders() {
 
 // * External
 _registerOthers() {
-  //TODO register external packages
   Dio dio = Dio(BaseOptions(
     baseUrl: Strings.baseUrl,
     connectTimeout: 1000 * 60, //60sec

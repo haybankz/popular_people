@@ -1,3 +1,4 @@
+import 'dart:developer';
 import 'dart:io';
 
 import 'package:dio/dio.dart';
@@ -35,6 +36,7 @@ class RestPopularPeopleRemoteDataSource
     } on ServerException {
       rethrow;
     } catch (e) {
+      log(e.toString());
       throw ServerException(Strings.parsing);
     }
   }

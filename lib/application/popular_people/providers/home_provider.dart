@@ -7,14 +7,15 @@ class HomeProvider extends ChangeNotifier {
 
   HomeProvider(this._fetchPopularPeopleUseCase);
 
-  Result<PopularPeopleEntity> peopleList =
+  Result<PopularPeopleEntity> peopleResult =
       Result<PopularPeopleEntity>.completed(null);
 
   Future<void> fetchPeople() async {
-    peopleList = Result<PopularPeopleEntity>.loading("");
+    peopleResult = Result<PopularPeopleEntity>.loading("");
     notifyListeners();
 
-    peopleList = await _fetchPopularPeopleUseCase
+    peopleResult = await _fetchPopularPeopleUseCase
         .call(FetchPopularPeopleParam(1, "en-US"));
+    notifyListeners();
   }
 }

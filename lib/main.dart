@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:popular_people/application/popular_people/providers/home_provider.dart';
+import 'package:popular_people/application/popular_people/providers/person_detail_provider.dart';
 import 'package:popular_people/dependency_container.dart';
 import 'package:provider/provider.dart';
 
@@ -19,7 +20,10 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
-        ChangeNotifierProvider(create: (_) => GetIt.I<HomeProvider>())
+        ChangeNotifierProvider<HomeProvider>(
+            create: (_) => GetIt.I<HomeProvider>()),
+        ChangeNotifierProvider<PersonDetailProvider>(
+            create: (_) => GetIt.I<PersonDetailProvider>()),
       ],
       child: MaterialApp(
         title: 'Popular People',

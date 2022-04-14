@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:popular_people/application/popular_people/providers/home_provider.dart';
 import 'package:popular_people/application/popular_people/views/person_detail_screen.dart';
 import 'package:popular_people/core/core.dart';
+import 'package:popular_people/domain/entities/person_entity.dart';
 import 'package:provider/provider.dart';
 
 class HomePage extends StatefulWidget {
@@ -32,20 +33,63 @@ class _HomePageState extends State<HomePage> {
         title: const Text("Popular People"),
       ),
       body: Builder(builder: (ctx) {
-        if (_homeProvider.peopleResult.status == Status.loading) {
-          return Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: const [
-              SizedBox(
-                width: 50,
-                height: 50,
-                child: CircularProgressIndicator.adaptive(),
-              ),
-              Text("Loading ......")
-            ],
+        if (_homeProvider.isLoading) {
+          return Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: const [
+                SizedBox(
+                  width: 50,
+                  height: 50,
+                  child: CircularProgressIndicator.adaptive(),
+                ),
+                Text("Loading ......")
+              ],
+            ),
           );
-        } else if (_homeProvider.peopleResult.status == Status.error) {
-          return Column(
+        } else if (_homeProvider.peopleResult.status == Status.completed ||
+            _homeProvider.peopleList.isNotEmpty) {
+          final peopleList = _homeProvider.peopleList;
+          return NotificationListener<ScrollNotification>(
+            onNotification: (ScrollNotification scrollInfo) {
+              if (!_homeProvider.isLoadingMore &&
+                  scrollInfo.metrics.pixels ==
+                      scrollInfo.metrics.maxScrollExtent &&
+                  scrollInfo.metrics.pixels > 0) {
+                _homeProvider.fetchPeople();
+              }
+
+              return true;
+            },
+            child: ListView.separated(
+                itemBuilder: (ctx, index) {
+                  if (index == peopleList.length - 1) {
+                    return Column(
+                      children: [
+                        _PersonWidget(person: peopleList[index]),
+                        const SizedBox(
+                          height: 10,
+                        ),
+                        _homeProvider.isLoadingMore
+                            ? const Text("Loading more.....")
+                            : const SizedBox.shrink(),
+                        SizedBox(
+                          height: _homeProvider.isLoadingMore ? 50 : 0,
+                        ),
+                      ],
+                    );
+                  }
+
+                  return _PersonWidget(person: peopleList[index]);
+                },
+                separatorBuilder: (ctx, index) => const Divider(
+                      color: Colors.grey,
+                    ),
+                itemCount: peopleList.length),
+          );
+        }
+        return Center(
+          child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               const Icon(
@@ -62,38 +106,41 @@ class _HomePageState extends State<HomePage> {
                 },
               )
             ],
-          );
-        }
+          ),
+        );
+      }),
+    );
+  }
+}
 
-        final peopleList = _homeProvider.peopleResult.data?.results ?? [];
-        return ListView.separated(
-            itemBuilder: (ctx, index) => Material(
-                  child: ListTile(
-                    leading: Hero(
-                      tag: "person_${peopleList[index].id}",
-                      child: _PersonImage(
-                          imageUrl: peopleList[index].profilePath ?? ""),
-                    ),
-                    title: Text(
-                      peopleList[index].name ?? "",
-                      style: Theme.of(context).textTheme.headline6,
-                    ),
-                    subtitle: Text(peopleList[index].knownForDepartment ?? ""),
-                    onTap: () {
-                      Navigator.push(
-                          context,
-                          PageRouteBuilder(
-                              transitionDuration: const Duration(seconds: 1),
-                              pageBuilder: (_, __, ___) => PersonDetailScreen(
-                                  person: peopleList[index])));
-                    },
-                  ),
-                ),
-            separatorBuilder: (ctx, index) => const Divider(
-                  color: Colors.grey,
-                ),
-            itemCount: peopleList.length);
-      }), // This trailing comma makes auto-formatting nicer for build methods.
+class _PersonWidget extends StatelessWidget {
+  const _PersonWidget({
+    Key? key,
+    required this.person,
+  }) : super(key: key);
+
+  final PersonEntity person;
+
+  @override
+  Widget build(BuildContext context) {
+    return ListTile(
+      leading: Hero(
+        tag: "person_${person.id}",
+        child: _PersonImage(imageUrl: person.profilePath ?? ""),
+      ),
+      title: Text(
+        person.name ?? "",
+        style: Theme.of(context).textTheme.headline6,
+      ),
+      subtitle: Text(person.knownForDepartment ?? ""),
+      onTap: () {
+        Navigator.push(
+            context,
+            PageRouteBuilder(
+                transitionDuration: const Duration(seconds: 1),
+                pageBuilder: (_, __, ___) =>
+                    PersonDetailScreen(person: person)));
+      },
     );
   }
 }

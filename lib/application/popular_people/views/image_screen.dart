@@ -2,7 +2,6 @@ import 'dart:io';
 import 'dart:typed_data';
 import 'dart:ui' as ui;
 
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:image_gallery_saver/image_gallery_saver.dart';
@@ -38,8 +37,8 @@ class ImageScreen extends StatelessWidget {
           key: _imageKey,
           child: Hero(
             tag: "image_${image.filePath}",
-            child: CachedNetworkImage(
-              imageUrl: "${Strings.imageStorageUrl}${image.filePath}",
+            child: Image.network(
+              "${Strings.imageStorageUrl}${image.filePath}",
               width: image.width?.toDouble(),
               height: image.height?.toDouble(),
             ),

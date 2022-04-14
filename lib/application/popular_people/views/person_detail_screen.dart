@@ -1,4 +1,3 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:popular_people/application/popular_people/providers/person_detail_provider.dart';
 import 'package:popular_people/application/popular_people/views/image_screen.dart';
@@ -39,9 +38,8 @@ class _PersonDetailScreenState extends State<PersonDetailScreen> {
                 children: [
                   Hero(
                     tag: "person_${widget.person.id}",
-                    child: CachedNetworkImage(
-                      imageUrl:
-                          '${Strings.imageStorageUrl}${widget.person.profilePath}',
+                    child: Image.network(
+                      '${Strings.imageStorageUrl}${widget.person.profilePath}',
                       width: double.infinity,
                       fit: BoxFit.cover,
                     ),
@@ -152,32 +150,44 @@ class _ImageGridWidget extends StatelessWidget {
         shrinkWrap: true,
         gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
             crossAxisCount: 3, childAspectRatio: 2 / 3),
-        itemBuilder: (_, int index) => Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 5),
-          child: GestureDetector(
-            onTap: () {
-              Navigator.push(
-                  context,
-                  PageRouteBuilder(
-                      transitionDuration: const Duration(seconds: 1),
-                      pageBuilder: (_, __, ___) =>
-                          ImageScreen(image: imageList[index])));
-            },
-            child: Hero(
-              tag: "image_${imageList[index].filePath}",
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(6),
-                child: CachedNetworkImage(
-                  imageUrl:
-                      "${Strings.imageStorageUrl}${imageList[index].filePath}",
-                  fit: BoxFit.fill,
-                ),
-              ),
-            ),
-          ),
-        ),
+        itemBuilder: (_, int index) => ImageWidget(image: imageList[index]),
         itemCount: imageList.length,
       );
     });
+  }
+}
+
+class ImageWidget extends StatelessWidget {
+  const ImageWidget({
+    Key? key,
+    required this.image,
+  }) : super(key: key);
+
+  final ImageEntity image;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 5),
+      child: GestureDetector(
+        onTap: () {
+          Navigator.push(
+              context,
+              PageRouteBuilder(
+                  transitionDuration: const Duration(seconds: 1),
+                  pageBuilder: (_, __, ___) => ImageScreen(image: image)));
+        },
+        child: Hero(
+          tag: "image_${image.filePath}",
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(6),
+            child: Image.network(
+              "${Strings.imageStorageUrl}${image.filePath}",
+              fit: BoxFit.fill,
+            ),
+          ),
+        ),
+      ),
+    );
   }
 }

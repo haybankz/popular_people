@@ -39,7 +39,6 @@ dependencies:
   get_it: ^7.2.0
   equatable: ^2.0.3
   provider: ^6.0.2
-  cached_network_image: ^3.2.0
   flutter_dotenv: ^5.0.2
   palette_generator: ^0.3.3
   image_gallery_saver: ^1.7.1
@@ -48,6 +47,8 @@ dependencies:
 
 dev_dependencies:
   flutter_test:
+    sdk: flutter
+  integration_test:
     sdk: flutter
 
   # The "flutter_lints" package below contains a set of recommended lints to

@@ -1,4 +1,3 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:popular_people/application/popular_people/providers/home_provider.dart';
 import 'package:popular_people/application/popular_people/views/person_detail_screen.dart';
@@ -62,11 +61,12 @@ class _HomePageState extends State<HomePage> {
               return true;
             },
             child: ListView.separated(
+                key: const Key("peopleListViewKey"),
                 itemBuilder: (ctx, index) {
                   if (index == peopleList.length - 1) {
                     return Column(
                       children: [
-                        _PersonWidget(person: peopleList[index]),
+                        PersonWidget(person: peopleList[index]),
                         const SizedBox(
                           height: 10,
                         ),
@@ -80,7 +80,7 @@ class _HomePageState extends State<HomePage> {
                     );
                   }
 
-                  return _PersonWidget(person: peopleList[index]);
+                  return PersonWidget(person: peopleList[index]);
                 },
                 separatorBuilder: (ctx, index) => const Divider(
                       color: Colors.grey,
@@ -114,8 +114,8 @@ class _HomePageState extends State<HomePage> {
   }
 }
 
-class _PersonWidget extends StatelessWidget {
-  const _PersonWidget({
+class PersonWidget extends StatelessWidget {
+  const PersonWidget({
     Key? key,
     required this.person,
   }) : super(key: key);
@@ -159,8 +159,8 @@ class _PersonImage extends StatelessWidget {
     return ClipRRect(
       borderRadius: const BorderRadius.horizontal(
           right: Radius.circular(4), left: Radius.circular(4)),
-      child: CachedNetworkImage(
-        imageUrl: "${Strings.imageStorageUrl}$imageUrl",
+      child: Image.network(
+        "${Strings.imageStorageUrl}$imageUrl",
         width: 60,
         height: 60,
         fit: BoxFit.fill,

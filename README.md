@@ -1,6 +1,6 @@
 # Popular People
 
-Sample app showing information about popular people based on the ```TheMovieDB``` API
+Sample app showing information about popular people based on the ```TheMovieDB``` [API](https://developers.themoviedb.org/3)
 
 ## Getting Started
 

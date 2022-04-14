@@ -27,71 +27,96 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     _homeProvider = Provider.of<HomeProvider>(context);
     return Scaffold(
+      appBar: AppBar(
+        centerTitle: false,
+        title: const Text("Popular People"),
+      ),
       body: Builder(builder: (ctx) {
         if (_homeProvider.peopleResult.status == Status.loading) {
-          return Center(
-            child: Column(
-              children: const [
-                SizedBox(
-                  width: 50,
-                  height: 50,
-                  child: CircularProgressIndicator.adaptive(),
-                ),
-                Text("Loading ......")
-              ],
-            ),
+          return Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: const [
+              SizedBox(
+                width: 50,
+                height: 50,
+                child: CircularProgressIndicator.adaptive(),
+              ),
+              Text("Loading ......")
+            ],
           );
         } else if (_homeProvider.peopleResult.status == Status.error) {
-          return Center(
-            child: Column(
-              children: [
-                const Icon(
-                  Icons.error_outline,
-                  color: Colors.red,
+          return Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Icon(
+                Icons.error_outline,
+                color: Colors.red,
+              ),
+              TextButton(
+                child: const Text(
+                  "Error.\n Click to retry",
+                  textAlign: TextAlign.center,
                 ),
-                TextButton(
-                  child: const Text(
-                    "Error.\n Click to retry",
-                    textAlign: TextAlign.center,
-                  ),
-                  onPressed: () {
-                    _homeProvider.fetchPeople();
-                  },
-                )
-              ],
-            ),
+                onPressed: () {
+                  _homeProvider.fetchPeople();
+                },
+              )
+            ],
           );
         }
 
         final peopleList = _homeProvider.peopleResult.data?.results ?? [];
         return ListView.separated(
-            itemBuilder: (ctx, index) => ListTile(
-                  leading: ClipRRect(
-                    borderRadius: const BorderRadius.horizontal(
-                        right: Radius.circular(4), left: Radius.circular(4)),
-                    child: CachedNetworkImage(
-                      imageUrl:
-                          "${Strings.imageStorageUrl}${peopleList[index].profilePath!}",
-                      width: 60,
-                      height: 60,
-                      fit: BoxFit.fill,
+            itemBuilder: (ctx, index) => Material(
+                  child: ListTile(
+                    leading: Hero(
+                      tag: "person_${peopleList[index].id}",
+                      child: _PersonImage(
+                          imageUrl: peopleList[index].profilePath ?? ""),
                     ),
+                    title: Text(
+                      peopleList[index].name ?? "",
+                      style: Theme.of(context).textTheme.headline6,
+                    ),
+                    subtitle: Text(peopleList[index].knownForDepartment ?? ""),
+                    onTap: () {
+                      Navigator.push(
+                          context,
+                          PageRouteBuilder(
+                              transitionDuration: const Duration(seconds: 1),
+                              pageBuilder: (_, __, ___) => PersonDetailScreen(
+                                  person: peopleList[index])));
+                    },
                   ),
-                  title: Text(peopleList[index].name ?? ""),
-                  subtitle: Text(peopleList[index].knownForDepartment ?? ""),
-                  onTap: () {
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (_) =>
-                                PersonDetailScreen(person: peopleList[index])));
-                  },
                 ),
             separatorBuilder: (ctx, index) => const Divider(
                   color: Colors.grey,
                 ),
             itemCount: peopleList.length);
       }), // This trailing comma makes auto-formatting nicer for build methods.
+    );
+  }
+}
+
+class _PersonImage extends StatelessWidget {
+  const _PersonImage({
+    Key? key,
+    required this.imageUrl,
+  }) : super(key: key);
+
+  final String imageUrl;
+
+  @override
+  Widget build(BuildContext context) {
+    return ClipRRect(
+      borderRadius: const BorderRadius.horizontal(
+          right: Radius.circular(4), left: Radius.circular(4)),
+      child: CachedNetworkImage(
+        imageUrl: "${Strings.imageStorageUrl}$imageUrl",
+        width: 60,
+        height: 60,
+        fit: BoxFit.fill,
+      ),
     );
   }
 }

@@ -9,4 +9,5 @@ class Strings {
   static const connectionCancelled = "Connection was cancelled";
   static const unableToFetch = "Unable to fetch resource";
   static const parsing = "Unable to read server response";
+  static const heroTag = "hero-tag";
 }

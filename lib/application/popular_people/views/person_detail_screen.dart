@@ -1,6 +1,5 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:palette_generator/palette_generator.dart';
 import 'package:popular_people/application/popular_people/providers/person_detail_provider.dart';
 import 'package:popular_people/application/popular_people/views/image_screen.dart';
 import 'package:popular_people/core/core.dart';
@@ -25,56 +24,78 @@ class _PersonDetailScreenState extends State<PersonDetailScreen> {
     });
   }
 
-  Future<PaletteGenerator> _updatePaletteGenerator() async {
-    final paletteGenerator = await PaletteGenerator.fromImageProvider(
-        CachedNetworkImageProvider(
-            "${Strings.imageStorageUrl}${widget.person.profilePath}"));
-    return paletteGenerator;
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: CustomScrollView(
-        slivers: <Widget>[
-          SliverAppBar(
-            expandedHeight: 250.0,
-            pinned: true,
-            flexibleSpace: FlexibleSpaceBar(
-              title: Text(
-                widget.person.name ?? "",
-              ),
-              background: FutureBuilder<PaletteGenerator>(
-                  future: _updatePaletteGenerator(),
-                  builder: (context, snapshot) {
-                    return Stack(
+      appBar: AppBar(
+        title: Text(widget.person.name!.split(" ").first),
+      ),
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            SizedBox(
+              height: MediaQuery.of(context).size.height * 0.4,
+              child: Stack(
+                children: [
+                  Hero(
+                    tag: "person_${widget.person.id}",
+                    child: CachedNetworkImage(
+                      imageUrl:
+                          '${Strings.imageStorageUrl}${widget.person.profilePath}',
+                      width: double.infinity,
+                      fit: BoxFit.cover,
+                    ),
+                  ),
+                  Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.all(10),
+                    decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                            begin: Alignment.topCenter,
+                            end: Alignment.bottomCenter,
+                            colors: [
+                          Colors.transparent,
+                          Colors.brown.withOpacity(0.9)
+                        ])),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.end,
                       children: [
-                        CachedNetworkImage(
-                          imageUrl:
-                              '${Strings.imageStorageUrl}${widget.person.profilePath}',
-                          width: double.infinity,
-                          fit: BoxFit.cover,
+                        Text(
+                          "${widget.person.name}",
+                          style: Theme.of(context)
+                              .textTheme
+                              .headline5!
+                              .copyWith(color: Colors.white),
                         ),
-                        Container(
-                          width: double.infinity,
-                          decoration: BoxDecoration(
-                              gradient: LinearGradient(
-                                  begin: Alignment.topCenter,
-                                  end: Alignment.bottomCenter,
-                                  colors: [
-                                Colors.transparent,
-                                (snapshot.data?.darkVibrantColor?.color ??
-                                        Colors.grey)
-                                    .withOpacity(0.9)
-                              ])),
+                        const SizedBox(
+                          height: 10,
+                        ),
+                        Text(
+                          "${widget.person.gender == 2 ? "Male" : "Female"}  |  ${widget.person.knownForDepartment}",
+                          style: const TextStyle(
+                              color: Colors.white70, fontSize: 18),
+                        ),
+                        TextButton.icon(
+                          onPressed: null,
+                          icon: const Icon(
+                            Icons.star,
+                            color: Colors.yellow,
+                          ),
+                          label: Text(
+                            "${widget.person.popularity ?? 0.0}",
+                            style: const TextStyle(
+                                color: Colors.white, fontSize: 16),
+                          ),
                         )
                       ],
-                    );
-                  }),
+                    ),
+                  ),
+                ],
+              ),
             ),
-          ),
-          _ImageGridWidget(personId: widget.person.id!),
-        ],
+            _ImageGridWidget(personId: widget.person.id!)
+          ],
+        ),
       ),
     );
   }
@@ -88,54 +109,56 @@ class _ImageGridWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return Consumer<PersonDetailProvider>(builder: (ctx, provider, child) {
       if (provider.personImageResult.status == Status.loading) {
-        return SliverFillRemaining(
-          child: Column(
-            children: const [
-              SizedBox(
-                width: 50,
-                height: 50,
-                child: CircularProgressIndicator.adaptive(),
-              ),
-              Text("Loading ......")
-            ],
-          ),
+        return Column(
+          children: const [
+            SizedBox(
+              width: 50,
+              height: 50,
+              child: CircularProgressIndicator.adaptive(),
+            ),
+            Text("Loading ......")
+          ],
         );
       } else if (provider.personImageResult.status == Status.error) {
-        return SliverFillRemaining(
-          child: Column(
-            children: [
-              const Icon(
-                Icons.error_outline,
-                color: Colors.red,
+        return Column(
+          children: [
+            const Icon(
+              Icons.error_outline,
+              color: Colors.red,
+            ),
+            Text(provider.personImageResult.message),
+            TextButton(
+              child: const Text(
+                "Click to retry",
+                textAlign: TextAlign.center,
               ),
-              Text(provider.personImageResult.message),
-              TextButton(
-                child: const Text(
-                  "Click to retry",
-                  textAlign: TextAlign.center,
-                ),
-                onPressed: () {
-                  provider.getPersonImage(personId);
-                },
-              )
-            ],
-          ),
+              onPressed: () {
+                provider.getPersonImage(personId);
+              },
+            )
+          ],
         );
       }
       final imageList = provider.personImageResult.data?.images ?? [];
-      return SliverGrid(
+      return GridView.builder(
+        padding: EdgeInsets.zero,
+        physics: const NeverScrollableScrollPhysics(),
+        shrinkWrap: true,
         gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
             crossAxisCount: 3, childAspectRatio: 2 / 3),
-        delegate: SliverChildBuilderDelegate(
-          (_, int index) => Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 5),
-            child: GestureDetector(
-              onTap: () {
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (_) => ImageScreen(image: imageList[index])));
-              },
+        itemBuilder: (_, int index) => Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 5),
+          child: GestureDetector(
+            onTap: () {
+              Navigator.push(
+                  context,
+                  PageRouteBuilder(
+                      transitionDuration: const Duration(seconds: 1),
+                      pageBuilder: (_, __, ___) =>
+                          ImageScreen(image: imageList[index])));
+            },
+            child: Hero(
+              tag: "image_${imageList[index].filePath}",
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(6),
                 child: CachedNetworkImage(
@@ -146,8 +169,8 @@ class _ImageGridWidget extends StatelessWidget {
               ),
             ),
           ),
-          childCount: imageList.length,
         ),
+        itemCount: imageList.length,
       );
     });
   }

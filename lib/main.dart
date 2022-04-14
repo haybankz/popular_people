@@ -10,7 +10,7 @@ import 'application/application.dart';
 
 void main() async {
   await dotenv.load(fileName: ".env");
-  initDI();
+  await initDI();
   runApp(const MyApp());
 }
 
@@ -30,7 +30,7 @@ class MyApp extends StatelessWidget {
       child: MaterialApp(
         title: 'Popular People',
         theme: ThemeData(
-          primarySwatch: Colors.blue,
+          primarySwatch: Colors.deepPurple,
         ),
         home: const HomePage(),
       ),

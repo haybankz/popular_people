@@ -6,14 +6,14 @@ import 'package:popular_people/application/popular_people/providers/home_provide
 import 'package:popular_people/application/popular_people/providers/person_detail_provider.dart';
 import 'package:popular_people/data/data.dart';
 import 'package:popular_people/domain/domain.dart';
-import 'package:popular_people/domain/use_cases/fetch_person_image_use_case.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'core/core.dart';
 
 final di = GetIt.instance;
 
-void initDI() {
-  _registerOthers();
+Future<void> initDI() async {
+  await _registerOthers();
   _registerRepositories();
   _registerRemoteDataSources();
   _registerLocalDataSources();
@@ -34,7 +34,9 @@ _registerUseCases() {
 _registerRepositories() {
   di.registerLazySingleton<PopularPeopleRepository>(() =>
       PopularPeopleRepositoryImpl(
-          di<NetworkInfo>(), di<PopularPeopleRemoteDataSource>()));
+          di<NetworkInfo>(),
+          di<PopularPeopleRemoteDataSource>(),
+          di<PopularPeopleLocalDataSource>()));
 }
 
 // * Network data sources
@@ -44,7 +46,10 @@ _registerRemoteDataSources() {
 }
 
 // * Local data sources
-_registerLocalDataSources() {}
+_registerLocalDataSources() {
+  di.registerFactory<PopularPeopleLocalDataSource>(
+      () => CachedPopularPeopleDataSource(di<SharedPreferences>()));
+}
 
 //  * Providers
 _registerProviders() {
@@ -53,7 +58,7 @@ _registerProviders() {
 }
 
 // * External
-_registerOthers() {
+_registerOthers() async {
   Dio dio = Dio(BaseOptions(
     baseUrl: Strings.baseUrl,
     connectTimeout: 1000 * 60, //60sec
@@ -69,6 +74,9 @@ _registerOthers() {
         requestBody: true));
   }
   di.registerFactory<Dio>(() => dio);
+
+  final prefs = await SharedPreferences.getInstance();
+  di.registerFactory<SharedPreferences>(() => prefs);
 
   di.registerSingleton<InternetConnectionChecker>(InternetConnectionChecker());
 

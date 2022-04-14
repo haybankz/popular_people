@@ -112,6 +112,9 @@ class _ImageGridWidget extends StatelessWidget {
         return Column(
           children: const [
             SizedBox(
+              height: 20,
+            ),
+            SizedBox(
               width: 50,
               height: 50,
               child: CircularProgressIndicator.adaptive(),
@@ -122,6 +125,9 @@ class _ImageGridWidget extends StatelessWidget {
       } else if (provider.personImageResult.status == Status.error) {
         return Column(
           children: [
+            const SizedBox(
+              height: 20,
+            ),
             const Icon(
               Icons.error_outline,
               color: Colors.red,

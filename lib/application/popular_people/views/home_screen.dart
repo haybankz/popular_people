@@ -96,9 +96,10 @@ class _HomePageState extends State<HomePage> {
                 Icons.error_outline,
                 color: Colors.red,
               ),
+              Text(_homeProvider.peopleResult.message),
               TextButton(
                 child: const Text(
-                  "Error.\n Click to retry",
+                  "Click to retry",
                   textAlign: TextAlign.center,
                 ),
                 onPressed: () {

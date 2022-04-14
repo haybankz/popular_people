@@ -8,7 +8,6 @@ import 'package:flutter/rendering.dart';
 import 'package:image_gallery_saver/image_gallery_saver.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:popular_people/core/core.dart';
-import 'package:popular_people/data/data.dart';
 import 'package:popular_people/domain/domain.dart';
 
 class ImageScreen extends StatelessWidget {
@@ -19,7 +18,6 @@ class ImageScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    print((image as ImageModel).toJson());
     return Scaffold(
       appBar: AppBar(
         actions: [

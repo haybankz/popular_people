@@ -5,7 +5,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
 import 'package:popular_people/application/application.dart';
-import 'package:popular_people/application/popular_people/views/person_detail_screen.dart';
+import 'package:popular_people/application/widgets/widgets.dart';
 import 'package:popular_people/dependency_container.dart';
 import 'package:popular_people/main.dart';
 import 'package:shared_preferences/shared_preferences.dart';

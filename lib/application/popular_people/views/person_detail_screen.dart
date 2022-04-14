@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:popular_people/application/popular_people/providers/person_detail_provider.dart';
-import 'package:popular_people/application/popular_people/views/image_screen.dart';
-import 'package:popular_people/core/core.dart';
-import 'package:popular_people/domain/domain.dart';
+import 'package:popular_people/application/widgets/widgets.dart';
 import 'package:provider/provider.dart';
+
+import '../../../core/core.dart';
+import '../../../domain/domain.dart';
+import '../popular_people.dart';
 
 class PersonDetailScreen extends StatefulWidget {
   const PersonDetailScreen({Key? key, required this.person}) : super(key: key);
@@ -107,41 +108,13 @@ class _ImageGridWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return Consumer<PersonDetailProvider>(builder: (ctx, provider, child) {
       if (provider.personImageResult.status == Status.loading) {
-        return Column(
-          children: const [
-            SizedBox(
-              height: 20,
-            ),
-            SizedBox(
-              width: 50,
-              height: 50,
-              child: CircularProgressIndicator.adaptive(),
-            ),
-            Text("Loading ......")
-          ],
-        );
+        return const LoadingWidget();
       } else if (provider.personImageResult.status == Status.error) {
-        return Column(
-          children: [
-            const SizedBox(
-              height: 20,
-            ),
-            const Icon(
-              Icons.error_outline,
-              color: Colors.red,
-            ),
-            Text(provider.personImageResult.message),
-            TextButton(
-              child: const Text(
-                "Click to retry",
-                textAlign: TextAlign.center,
-              ),
-              onPressed: () {
-                provider.getPersonImage(personId);
-              },
-            )
-          ],
-        );
+        return ErrorMessageWidget(
+            errorMessage: provider.personImageResult.message,
+            onRetry: () {
+              provider.getPersonImage(personId);
+            });
       }
       final imageList = provider.personImageResult.data?.images ?? [];
       return GridView.builder(

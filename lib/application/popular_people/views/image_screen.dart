@@ -6,8 +6,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:image_gallery_saver/image_gallery_saver.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:popular_people/core/core.dart';
-import 'package:popular_people/domain/domain.dart';
+
+import '../../../core/core.dart';
+import '../../../domain/domain.dart';
 
 class ImageScreen extends StatelessWidget {
   ImageScreen({Key? key, required this.image}) : super(key: key);

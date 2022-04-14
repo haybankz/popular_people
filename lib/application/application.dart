@@ -1,1 +1,1 @@
-export 'popular_people/views/home_screen.dart';
+export 'popular_people/popular_people.dart';

@@ -1,16 +1,11 @@
-# popular_people
+# Popular People
 
-Sample app showing information about popular people
+Sample app showing information about popular people based on the ```TheMovieDB``` API
 
 ## Getting Started
 
 This project is a starting point for a Flutter application.
+- Sign up and get your API_KEY [here](https://developers.themoviedb.org/3/getting-started/introduction)
+- Replace the API_KEY value placeholder value with your tmdb api key in the .env file
+- Also Replace the API_KEY value placeholder value with your tmdb api key in the test/test_resources/.env file
 
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://flutter.dev/docs/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://flutter.dev/docs/cookbook)
-
-For help getting started with Flutter, view our
-[online documentation](https://flutter.dev/docs), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
